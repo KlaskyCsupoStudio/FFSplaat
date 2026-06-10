@@ -1,0 +1,17 @@
+Go To Discord Developer Portal
+
+Create Bot
+
+Any Info
+
+Enable Privileged Gateway Intents
+
+Message Content Intent
+
+Server Members Intent (optional feat.)
+
+Files:
+
+pkg update && pkg upgrade -y
+pkg install nodejs ffmpeg git -y
+npm install discord.js
