@@ -4,6 +4,20 @@ const fs = require('fs');
 const path = require('path');
 const got = require('got');
 
+// === DEPENDENCY CHECK (ImageMagick, etc.) ===
+function checkDependencies() {
+  try {
+    execSync('which convert', { stdio: 'ignore' });        // ImageMagick
+    execSync('which ffmpeg', { stdio: 'ignore' });
+    execSync('which jq', { stdio: 'ignore' });
+    console.log('Dependencies (ffmpeg, imagemagick, jq, coreutils, frei0r) detected.');
+  } catch (e) {
+    console.log('Some dependencies missing. Run: pkg install imagemagick coreutils jq frei0r');
+  }
+}
+
+checkDependencies();
+
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
@@ -118,6 +132,37 @@ const FILTERS = {
   "pitch_low": {t:"complex",v:"[0:a]rubberband=pitch=0.8[aout]"},
   "multi_pitch": {t:"complex",v:"[0:a]rubberband=formant=712923000:pitch=2^(0/12)[a1];[0:a]rubberband=formant=712923000:pitch=2^(12/12)[a2];[a1][a2]amix=2,volume=2[outa]"}
 };
+
+// Helper for ImageMagick frame processing
+async function processWithImageMagick(inputPath, outputPath, operation = 'hue') {
+  const framesDir = path.join(OUTPUT_DIR, 'frames_' + Date.now());
+  fs.mkdirSync(framesDir);
+
+  try {
+    // Extract frames
+    execSync(`ffmpeg -i "\( {inputPath}" -vf fps=30 " \){framesDir}/%04d.png" -y`, { stdio: 'pipe' });
+
+    // Apply ImageMagick operation
+    if (operation === 'hue') {
+      execSync(`mogrify -modulate 100,140,220 ${framesDir}/*.png`, { stdio: 'pipe' });
+    } else if (operation === 'neon') {
+      execSync(`mogrify -modulate 100,180,240 -colorspace RGB ${framesDir}/*.png`, { stdio: 'pipe' });
+    }
+
+    // Re-encode video
+    execSync(`ffmpeg -framerate 30 -i "\( {framesDir}/%04d.png" -i " \){inputPath}" -map 0:v -map 1:a -c:v libx264 -crf 23 -c:a aac -shortest -y "${outputPath}"`, { stdio: 'pipe' });
+
+    return true;
+  } catch (e) {
+    console.error('ImageMagick processing failed:', e.message);
+    return false;
+  } finally {
+    // Cleanup
+    if (fs.existsSync(framesDir)) {
+      fs.rmSync(framesDir, { recursive: true, force: true });
+    }
+  }
+}
 
 client.on('ready', () => console.log(`Bot online: ${client.user.tag}`));
 
