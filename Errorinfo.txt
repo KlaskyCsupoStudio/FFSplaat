@@ -3,4 +3,4 @@ Know About Every Error From The Bot.
 n103: You Must Send An Attachment [Click The + Icon And Click On Files (Or Choose A Random One) And Click Send, Along With Your FFMPEG Filter Chain.]
 n505: Make Sure You Have Spelled The Filter Name Correctly.
 n239: You Must Put Correct Arguments In The Output Section.
-n1009: Make Sure You Typed Correctly The Filter Names And Settings/Arguments Correctly Or It Won't Work, If There's An Missing Plug-in, Contact Owner.
+n1004: Make Sure You Typed Correctly The Filter Names And Settings/Arguments Correctly Or It Won't Work, If There's An Missing Plug-in, Contact Owner.
