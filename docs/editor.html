@@ -1,0 +1,76 @@
+<script>
+const videoInput = document.getElementById("videoFile");
+const audioInput = document.getElementById("audioFile");
+
+const videoPreview = document.getElementById("videoPreview");
+const audioPreview = document.getElementById("audioPreview");
+
+const ffmpegCommand = document.getElementById("ffmpegCommand");
+
+videoInput.onchange = () => {
+    const file = videoInput.files[0];
+    if (!file) return;
+
+    videoPreview.src = URL.createObjectURL(file);
+    updateCommand();
+};
+
+audioInput.onchange = () => {
+    const file = audioInput.files[0];
+    if (!file) return;
+
+    audioPreview.src = URL.createObjectURL(file);
+    updateCommand();
+};
+
+function updateCommand() {
+
+    let cmd = "ffmpeg";
+
+    if (videoInput.files.length)
+        cmd += " -i input.mp4";
+
+    if (audioInput.files.length)
+        cmd += " -i input.wav";
+
+    let vf = [];
+    let af = [];
+
+    if(document.getElementById("mirror").checked)
+        vf.push("hflip");
+
+    if(document.getElementById("negate").checked)
+        vf.push("negate");
+
+    if(document.getElementById("reverse").checked)
+        af.push("areverse");
+
+    const hue = document.getElementById("hue").value;
+    if(hue != 0)
+        vf.push("hue=h="+hue);
+
+    const volume = document.getElementById("volume").value;
+    if(volume != 100)
+        af.push("volume="+(volume/100));
+
+    if(vf.length)
+        cmd += ' -vf "' + vf.join(",") + '"';
+
+    if(af.length)
+        cmd += ' -af "' + af.join(",") + '"';
+
+    cmd += " output.mp4";
+
+    ffmpegCommand.value = cmd;
+}
+
+function copyCommand() {
+    navigator.clipboard.writeText(ffmpegCommand.value);
+    alert("Copied!");
+}
+
+document.querySelectorAll("input").forEach(e=>{
+    e.oninput = updateCommand;
+    e.onchange = updateCommand;
+});
+  </script>
