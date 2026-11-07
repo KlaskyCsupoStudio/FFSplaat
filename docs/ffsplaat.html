@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151d">
+  <meta name="description" content="FFSplaat — an FFmpeg-powered media bot for Discord.">
+  <title>FFSplaat — Discord FFmpeg Bot</title>
+  <style>
+    :root {
+      --bg: #10151d; --panel: #171f2a; --panel2: #202b39; --text: #f4f6fa;
+      --muted: #aab5c4; --red: #ed5360; --red2: #c93b4b; --line: #2c3949;
+      --green: #72d6a0; --radius: 18px; --max: 1120px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--text); background:
+        radial-gradient(ellipse at 50% -20%, #27394e 0, transparent 52%), var(--bg);
+      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: auto; }
+    header { position: sticky; top: 0; z-index: 10; background: #10151deF; border-bottom: 1px solid #ffffff12; backdrop-filter: blur(14px); }
+    .nav { min-height: 72px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+    .brand { display:flex; align-items:center; gap:11px; font-weight:900; letter-spacing:.02em; }
+    .brand-mark { width:34px; height:34px; border-radius:13px; display:grid; place-items:center; color:white; background:var(--red); font-size:19px; font-weight:900; box-shadow: inset -5px -4px #0002; }
+    nav { display:flex; align-items:center; gap:23px; color:var(--muted); font-size:14px; }
+    nav a:hover, footer a:hover { color:white; }
+    .menu { display:none; border:1px solid var(--line); color:white; background:var(--panel); padding:8px 12px; border-radius:10px; }
+    .btn { display:inline-flex; justify-content:center; align-items:center; gap:9px; border:0; border-radius:12px; padding:12px 18px; color:white; background:var(--red); font-weight:800; cursor:pointer; transition:.18s ease; }
+    .btn:hover { background:var(--red2); transform:translateY(-2px); }
+    .btn.secondary { background:#293748; border:1px solid #3a4b60; }
+    .btn.small { padding:9px 13px; font-size:14px; }
+    .hero { padding:92px 0 76px; text-align:center; }
+    .eyebrow { color:#ff929b; text-transform:uppercase; letter-spacing:.16em; font-size:12px; font-weight:900; }
+    h1 { font-size:clamp(42px, 7vw, 76px); line-height:1.02; letter-spacing:-.055em; margin:18px auto; max-width:800px; }
+    h1 span { color:var(--red); }
+    .lead { max-width:700px; margin:0 auto 28px; color:var(--muted); font-size:18px; }
+    .actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .platforms { color:var(--muted); font-size:13px; margin-top:18px; }
+    section { padding:66px 0; }
+    .section-head { max-width:680px; margin-bottom:30px; }
+    h2 { font-size:clamp(30px, 4vw, 44px); line-height:1.1; letter-spacing:-.04em; margin:8px 0 12px; }
+    .sub { color:var(--muted); margin:0; }
+    .about-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:28px; align-items:center; }
+    .about-card, .feature-card, .settings, .step-card { background:linear-gradient(145deg, #1b2633, #151d27); border:1px solid var(--line); border-radius:var(--radius); }
+    .about-card { padding:30px; }
+    .mascot { min-height:250px; border-radius:var(--radius); background:radial-gradient(circle at 50% 40%, #33495f, #182330 65%); display:grid; place-items:center; overflow:hidden; }
+    .ff-icon { width:150px; height:150px; border-radius:35px; display:grid; place-items:center; color:#fff; font-size:58px; font-weight:950; letter-spacing:-.09em; background:linear-gradient(145deg,#ed5360,#9f3046); box-shadow:inset -14px -12px #0002, 0 22px 35px #0005; transform:rotate(-7deg); }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:24px; }
+    .stat { background:#1a2430; border:1px solid var(--line); border-radius:14px; padding:16px; text-align:center; }
+    .stat strong { display:block; font-size:20px; color:white; }
+    .stat span { color:var(--muted); font-size:12px; }
+    .features { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .feature-card { padding:24px; min-height:185px; }
+    .feature-icon { font-size:28px; }
+    .feature-card h3 { margin:10px 0 4px; }
+    .feature-card p { color:var(--muted); margin:0; font-size:14px; }
+    .settings { padding:28px; }
+    .settings-list { display:grid; grid-template-columns:repeat(2,1fr); gap:0 30px; }
+    .setting { display:flex; justify-content:space-between; gap:18px; padding:16px 0; border-bottom:1px solid var(--line); }
+    .setting:last-child, .setting:nth-last-child(2) { border-bottom:0; }
+    .setting span { color:var(--muted); }
+    .setting strong { text-align:right; }
+    .pill { display:inline-block; color:var(--green); background:#72d6a01a; border:1px solid #72d6a044; border-radius:30px; padding:2px 10px; font-size:12px; }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .step-card { padding:22px; }
+    .step-number { width:38px; height:38px; border-radius:12px; display:grid; place-items:center; background:#33475c; font-weight:900; margin-bottom:12px; }
+    .step-card p { color:var(--muted); margin:3px 0 0; font-size:13px; }
+    .cta { text-align:center; padding:52px 24px; border:1px solid #74414a; border-radius:24px; background:radial-gradient(ellipse at top, #512d3a, #1a202b 70%); }
+    .cta p { color:var(--muted); margin:0 auto 22px; max-width:560px; }
+    footer { padding:32px 0 45px; color:var(--muted); font-size:13px; }
+    .foot { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:24px; }
+    .foot-links { display:flex; gap:16px; flex-wrap:wrap; }
+    @media (max-width:760px) {
+      nav { display:none; position:absolute; top:71px; left:0; right:0; padding:18px 22px; background:#121923; border-bottom:1px solid var(--line); flex-direction:column; align-items:flex-start; }
+      nav.open { display:flex; } .menu { display:block; }
+      .nav .btn { display:none; } .about-grid { grid-template-columns:1fr; }
+      .features,.steps { grid-template-columns:1fr; } .stats { grid-template-columns:1fr; }
+      .settings-list { grid-template-columns:1fr; } .setting:nth-last-child(2) { border-bottom:1px solid var(--line); }
+      .hero { padding:70px 0 54px; } section { padding:48px 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Replace YOUR_CLIENT_ID with your Discord application's client ID, or paste your full OAuth2 invite URL below. -->
+  <script>
+    const DISCORD_INVITE_URL = "https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=0&scope=bot%20applications.commands";
+  </script>
+
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#home"><span class="brand-mark">ƒ</span><span>FFSPLAAT</span></a>
+      <nav id="site-nav">
+        <a href="#home">Home</a><a href="#about">About</a><a href="#features">Features</a>
+        <a href="#details">Bot details</a><a href="#how-it-works">How it works</a>
+      </nav>
+      <button class="menu" id="menu-btn" aria-label="Open navigation">Menu</button>
+      <a class="btn small invite-link" href="#">＋ Invite bot</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap" id="home">
+      <div class="eyebrow">Your media toolkit on Discord</div>
+      <h1>FFmpeg power,<br><span>right in your server.</span></h1>
+      <p class="lead">Meet FFSplaat, a Discord bot built around FFmpeg. Bring media-processing tools into your server and make working with audio and video more convenient.</p>
+      <div class="actions"><a class="btn invite-link" href="#">＋ Invite FFSplaat</a><a class="btn secondary" href="#features">Explore features ↓</a></div>
+      <div class="platforms">Discord bot • FFmpeg-powered • Audio and video workflows</div>
+    </section>
+
+    <section class="wrap" id="about">
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="eyebrow">About FFSplaat</div>
+          <h2>Media tools.<br>Where your community is.</h2>
+          <p class="sub">FFSplaat brings FFmpeg-powered media processing to Discord. Instead of switching between apps for every task, your server gets a convenient place to access the bot's media tools. Invite it and see what it can do.</p>
+          <div class="stats">
+            <div class="stat"><strong>FFmpeg</strong><span>media engine</span></div>
+            <div class="stat"><strong>Discord</strong><span>native home</span></div>
+            <div class="stat"><strong>Audio + Video</strong><span>media focus</span></div>
+          </div>
+        </div>
+        <div class="mascot" aria-label="FFSplaat logo artwork"><div class="ff-icon">ƒƒ</div></div>
+      </div>
+    </section>
+
+    <section class="wrap" id="features">
+      <div class="section-head"><div class="eyebrow">What it is made for</div><h2>FFmpeg tools, made accessible.</h2><p class="sub">A Discord-first way to work with media. Available commands and supported formats depend on the bot's current implementation.</p></div>
+      <div class="features">
+        <article class="feature-card"><div class="feature-icon">🎞️</div><h3>Video workflows</h3><p>Use FFmpeg-powered tools for common video-processing tasks from your Discord server.</p></article>
+        <article class="feature-card"><div class="feature-icon">🎧</div><h3>Audio workflows</h3><p>Work with audio media through a bot interface, without leaving your community space.</p></article>
+        <article class="feature-card"><div class="feature-icon">⚙️</div><h3>FFmpeg underneath</h3><p>Built around FFmpeg, the widely used framework for handling multimedia files and streams.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap" id="details">
+      <div class="section-head"><div class="eyebrow">Bot details</div><h2>Simple to understand. Ready for Discord.</h2><p class="sub">A quick overview of what powers FFSplaat.</p></div>
+      <div class="settings">
+        <div class="settings-list">
+          <div class="setting"><span>Bot name</span><strong>FFSplaat</strong></div>
+          <div class="setting"><span>Platform</span><strong>Discord</strong></div>
+          <div class="setting"><span>Media engine</span><strong>FFmpeg</strong></div>
+          <div class="setting"><span>Primary focus</span><strong>Audio &amp; video</strong></div>
+          <div class="setting"><span>Interface</span><strong>Discord commands</strong></div>
+          <div class="setting"><span>Invite</span><strong><i class="pill">OAuth2</i></strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="how-it-works">
+      <div class="section-head"><div class="eyebrow">Get started</div><h2>Three steps to get going.</h2><p class="sub">Add FFSplaat to your Discord server and use the commands it provides.</p></div>
+      <div class="steps">
+        <article class="step-card"><div class="step-number">1</div><strong>Invite the bot</strong><p>Use the invite button to add FFSplaat to a server where you have permission to manage bots.</p></article>
+        <article class="step-card"><div class="step-number">2</div><strong>Check its commands</strong><p>Open Discord and review the available commands and usage information.</p></article>
+        <article class="step-card"><div class="step-number">3</div><strong>Process your media</strong><p>Choose a supported operation and follow the bot's prompts to work with your media.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="cta"><div class="eyebrow">Get FFSplaat</div><h2>Bring FFmpeg to your Discord server.</h2><p>Invite FFSplaat and give your community a convenient way to access FFmpeg-powered media tools.</p><a class="btn invite-link" href="#">＋ Invite FFSplaat</a></div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <div class="foot">
+      <span>© 2026 FFSplaat. Powered by FFmpeg.</span>
+      <div class="foot-links"><a href="#about">About</a><a href="#features">Features</a><a href="#details">Bot details</a><a class="invite-link" href="#">Invite bot</a></div>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll(".invite-link").forEach(link => {
+      link.href = DISCORD_INVITE_URL;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+    });
+    document.getElementById("menu-btn").addEventListener("click", () => {
+      document.getElementById("site-nav").classList.toggle("open");
+    });
+    document.querySelectorAll("#site-nav a").forEach(link => link.addEventListener("click", () => {
+      document.getElementById("site-nav").classList.remove("open");
+    }));
+  </script>
+</body>
+</html>
